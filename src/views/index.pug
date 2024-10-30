@@ -1,0 +1,15 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    title= title
+  body
+    h1= title
+    p Welcome to my media API!
+    p= message
+    h2 Mock data titles
+    div 
+        ul 
+            each item in exampleData
+                li= item.title

@@ -1,62 +1,63 @@
 // mock data
-const mediaItems =[
+const mediaItems = [
   {
-    "media_id": 9632,
-    "filename": "ffd8.jpg",
-    "filesize": 887574,
-    "title": "Favorite drink",
-    "description": "",
-    "user_id": 1606,
-    "media_type": "image/jpeg",
-    "created_at": "2023-10-16T19:00:09.000Z"
+    media_id: 9632,
+    filename: 'sake.png',
+    filesize: 887574,
+    title: 'Favorite drink',
+    description: '',
+    user_id: 1606,
+    media_type: 'image/jpeg',
+    created_at: '2023-10-16T19:00:09.000Z',
   },
   {
-    "media_id": 9626,
-    "filename": "dbbd.jpg",
-    "filesize": 60703,
-    "title": "Miika",
-    "description": "My Photo",
-    "user_id": 3671,
-    "media_type": "image/jpeg",
-    "created_at": "2023-10-13T12:14:26.000Z"
+    media_id: 9626,
+    filename: 'myPhoto.png',
+    filesize: 60703,
+    title: 'Kawaii sushi',
+    description: 'My Photo',
+    user_id: 3671,
+    media_type: 'image/jpeg',
+    created_at: '2023-10-13T12:14:26.000Z',
   },
   {
-    "media_id": 9625,
-    "filename": "2f9b.jpg",
-    "filesize": 30635,
-    "title": "Aksux",
-    "description": "friends",
-    "user_id": 260,
-    "media_type": "image/jpeg",
-    "created_at": "2023-10-12T20:03:08.000Z"
+    media_id: 9625,
+    filename: 'sushiFriends.jpg',
+    filesize: 30635,
+    title: 'sushi friends',
+    description: 'Sushi friends',
+    user_id: 260,
+    media_type: 'image/jpeg',
+    created_at: '2023-10-12T20:03:08.000Z',
   },
   {
-    "media_id": 9592,
-    "filename": "f504.jpg",
-    "filesize": 48975,
-    "title": "Desert",
-    "description": "",
-    "user_id": 3609,
-    "media_type": "image/jpeg",
-    "created_at": "2023-10-12T06:59:05.000Z"
+    media_id: 9592,
+    filename: 'sushi1.jpg',
+    filesize: 48975,
+    title: 'Favourite food',
+    description: '',
+    user_id: 3609,
+    media_type: 'image/jpeg',
+    created_at: '2023-10-12T06:59:05.000Z',
   },
   {
-    "media_id": 9590,
-    "filename": "60ac.jpg",
-    "filesize": 23829,
-    "title": "Basement",
-    "description": "Light setup in basement",
-    "user_id": 305,
-    "media_type": "image/jpeg",
-    "created_at": "2023-10-12T06:56:41.000Z"
-  }
-]
+    media_id: 9590,
+    filename: 'basement.jpg',
+    filesize: 23829,
+    title: 'Basement',
+    description: 'Light setup in basement',
+    user_id: 305,
+    media_type: 'image/jpeg',
+    created_at: '2023-10-12T06:56:41.000Z',
+  },
+];
 
 // Get all items
 const getItems = (res) => {
   res.json(mediaItems);
 };
 
+// Add a new item
 const postItem = (req, res) => {
   console.log('post req body:', req.body);
   const newItem = req.body;
@@ -82,39 +83,27 @@ const getItemById = (req, res) => {
 };
 
 // delete an item by id
-const deleteItem = (id, res) => {
-  const index = mediaItems.findIndex((i) => i.id === id);
+const deleteItem = (media_id, res) => {
+  const index = mediaItems.findIndex((i) => i.media_id === media_id);
   if (index !== -1) {
     mediaItems.splice(index, 1);
-    res.writeHead(204, {'Content-Type': 'application/json'});
-    res.end();
+    res.status(204).end();
   } else {
-    res.writeHead(404, {'Content-Type': 'application/json'});
-    res.end(JSON.stringify({error: '404', message: 'Item not found'}));
+    res.status(404).json({message: 'item not found'});
   }
 };
 
 // update an item by id
-const putItem = (id, req, res) => {
-  let body = [];
-  req
-    .on('data', (chunk) => {
-      body.push(chunk);
-    })
-    .on('end', () => {
-      body = Buffer.concat(body).toString();
-      const update = JSON.parse(body);
+const putItem = (media_id, req, res) => {
+  const update = req.body;
+  const index = mediaItems.findIndex((i) => i.media_id === media_id);
 
-      const index = mediaItems.findIndex((i) => i.id === id);
-      if (index !== -1) {
-        mediaItems[index] = {id, ...update};
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify(mediaItems[index]));
-      } else {
-        res.writeHead(404, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify({error: '404', message: 'Item not found'}));
-      }
-    });
+  if (index !== -1) {
+    mediaItems[index] = {media_id, ...update};
+    res.status(200).json(mediaItems[index]);
+  } else {
+    res.status(404).json({message: 'item not found'});
+  }
 };
 
-export {getItems, postItem, getItemById, deleteItem, putItem};
+export {getItems, postItem, getItemById, deleteItem, putItem, mediaItems};
