@@ -94,76 +94,45 @@ INSERT INTO Tags (tag_name) VALUES ('Food'), ('Travel'), ('Friends'), ('Nature')
 
 INSERT INTO MediaItemTags (media_id, tag_id) VALUES (1, 1), (2, 2), (3, 3), (4, 4), (5, 2);
 
---------
+-- SELECTING
 
--- example of a query to update, delete, and select data
+-- Select users whose username starts with 'E':
+SELECT * FROM Users WHERE username LIKE 'E%';
 
--- Viewing a user's posts and their details
-
--- 1. Select users whose username starts with 'D':
-SELECT * FROM Users WHERE username LIKE 'D%';
-
--- 2. Select users created after a certain date:
-SELECT * FROM Users WHERE created_at > '2023-01-01';
-
--- 3. Cartesian product of Users and MediaItems tables:
-SELECT * FROM Users, MediaItems;
-
--- 4. Select all columns from both tables where user_id matches:
-SELECT * FROM Users, MediaItems WHERE Users.user_id = MediaItems.user_id;
-
--- 5. Select all media items along with the username of the owner using an inner join:
+-- Select all media items and the connected usernames:
 SELECT MediaItems.*, Users.username 
 FROM MediaItems 
 JOIN Users ON MediaItems.user_id = Users.user_id;
 
--- 6. Select media items with the highest filesize for each user using a subquery:
-SELECT * FROM MediaItems AS MI1
-WHERE filesize = (
-  SELECT MAX(filesize) FROM MediaItems AS MI2
-  WHERE MI1.user_id = MI2.user_id
-);
+-- Select all media items with their comments:
+SELECT MediaItems.*, Comments.comment_text
+FROM MediaItems
+LEFT JOIN Comments ON MediaItems.media_id = Comments.media_id;
 
--- 7. Select all media items and all users whether they have media items or not:
-SELECT 
-  Users.user_id, 
-  Users.username, 
-  MediaItems.media_id, 
-  MediaItems.title, 
-  MediaItems.filename
-FROM 
-  Users
-LEFT OUTER JOIN MediaItems 
-  ON Users.user_id = MediaItems.user_id;
+-- Select all media items with their likes:
+SELECT MediaItems.*, Likes.user_id
+FROM MediaItems
+LEFT JOIN Likes ON MediaItems.media_id = Likes.media_id;
 
-
--- Updating data examples
--- Update a user's user level:
-UPDATE Users SET user_level_id = 2 WHERE user_id = 1;
+-- UPDATING 
 
 -- Update a media item's title:
-UPDATE MediaItems SET title = 'Beautiful Sunset' WHERE media_id = 4;
+SELECT * FROM MediaItems WHERE Title LIKE 'S%';
+
+UPDATE MediaItems SET title = 'Nice sunset' WHERE media_id = 4;
 
 -- Updating a comment text:
-UPDATE Comments SET comment_text = 'Amazing view!' WHERE comment_id = 4;
+UPDATE Comments SET comment_text = 'You look hot!' WHERE comment_id = 2;
 
--- Deleting data examples
--- Delete a media item:
-DELETE FROM MediaItems WHERE media_id = 3;
+-- DELETING
 
 -- Delete a comment:
 DELETE FROM Comments WHERE comment_id = 1;
 
--- Deleting a user and cascading deletions:
-DELETE FROM Users WHERE user_id = 4;  -- This will also delete related likes and comments
+-- Delete a like:
+DELETE FROM Likes WHERE user_id = 260 AND media_id = 1;
 
--- Export the database
--- To export the database, run the following command in the command line:
--- mysqldump -u username -p mediashare > mediashare_backup.sql
 
--- Import the database back into the SQL server
--- To import the database, run the following command in the command line:
--- mysql -u username -p mediashare < mediashare_backup.sql
 
 
 
