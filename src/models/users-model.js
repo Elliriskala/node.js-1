@@ -88,15 +88,48 @@ const updateUser = async (id, update) => {
 };
 
 /**
- * delete user by id
+ * delete user by id, also deletes comments and mediaItems related to the user id
  * @param {number} id user id to delete
  * @returns {Promise<number>} number of affected rows
  */
 
 const deleteUser = async (id) => {
+  // delete comments related to the user
+  const deleteCommentSql = `
+    DELETE comments 
+    FROM comments
+    LEFT JOIN mediaItems ON comments.media_id = mediaItems.media_id
+    WHERE comments.user_id = ? OR mediaItems.user_id = ?
+  `;
+
+  // delete mediaitemtags related to the media item
+  const deleteMediaItemTagSql = `
+    DELETE mediaItemTags 
+    FROM mediaItemTags
+    LEFT JOIN mediaItems ON mediaItemTags.media_id = mediaItems.media_id
+    WHERE mediaItems.user_id = ?
+  `;
+
+  // delete mediaItems related to the user
+  const deleteMediaItemSql = 'DELETE FROM mediaItems WHERE user_id = ?';
+
+  // delete the user
   const sql = 'DELETE FROM users WHERE user_id = ?';
   try {
+    // delete comments
+    const [commentRows] = await promisePool.query(deleteCommentSql, [id, id]);
+    // delete mediaitemtags
+    const [mediaItemTagRows] = await promisePool.query(deleteMediaItemTagSql, [
+      id,
+    ]);
+    // delete mediaItems
+    const [mediaItemRows] = await promisePool.query(deleteMediaItemSql, [id]);
+
+    console.log('deleteUser', commentRows, mediaItemTagRows, mediaItemRows);
+
+    // delete the user
     const [rows] = await promisePool.query(sql, [id]);
+
     if (rows.affectedRows === 0) {
       console.log('deleteUser, `User ${id} deleted`');
       return null;

@@ -2,7 +2,7 @@ APIS
 
 Base URL: http://localhost:3000/api
 
-1. Media Endpoints
+### Media Endpoints
 
 Get All Media Items
 
@@ -48,7 +48,7 @@ Delete a Media Item
 - SQL Statement: DELETE FROM media WHERE id = ?;
 - SQL Statement: DELETE FROM mediaItemTags WHERE media_id = ?;
 
-2. Users endpoints
+### Users endpoints
 
 Get All Users
 
@@ -97,7 +97,7 @@ Delete a user
 
 - SQL Statement: DELETE FROM users WHERE id = ?;
 
-3. Comments endpoints
+### Comments endpoints
 
 Get all comments
 
