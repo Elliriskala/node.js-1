@@ -16,38 +16,51 @@ GET http://localhost:3000/api/media/9632
 
 ### Get media item by id
 
-GET http://localhost:3000/api/media/96
+GET http://localhost:3000/api/media/4
 
 ### Create media item
 
 POST http://localhost:3000/api/media
-Content-Type: application/json
+Content-Type: multipart/form-data; boundary=----Boundary
 
-{
-    "filename": "uusi.jpg",
-    "filesize": 23829,
-    "title": "Uusi kuva",
-    "description": "Testi kuva",
-    "user_id": 305,
-    "media_type": "image/jpeg",
-    "created_at": "2023-10-12T06:56:41.000Z"
-  }
+------Boundary
+Content-Disposition: form-data; name="title"
 
+Super cute cat image
+------Boundary
+Content-Disposition: form-data; name="user_id"
 
-### Delete a media item
+1
+------Boundary
+Content-Disposition: form-data; name="file"; filename="image.png"
+Content-Type: image/png
 
-DELETE http://localhost:3000/api/media/9626
-
+< ./test-cat.png
+------Boundary--
 
 ### update a media item
 
-PUT http://localhost:3000/api/media/9590
+PUT http://localhost:3000/api/media/6
 Content-Type: application/json
 
 {
-    "title": "Basement modified",
-    "description": "new basement"
+    "title": "My cat",
+    "description": "my very cute cat"
 }
+
+### Delete a media item
+
+DELETE http://localhost:3000/api/media/1
+
+## User resource
+
+### Get all users
+
+GET http://localhost:3000/api/users
+
+### Get user by id
+
+GET http://localhost:3000/api/users/4
 
 ### Create a new user
 
@@ -56,25 +69,68 @@ Content-Type: application/json
 
 {
     "user_id": "",
-    "username": "Elli",
+    "username": "eltsu",
     "password": "********",
-    "email": "elli@example.com",
-    "user_level_id": 4,
+    "email": "elli12@example.com",
+    "user_level_id": 2,
     "created_at": "2021-12-11T06:00:41.000Z"
+}
+
+### Update a user
+
+PUT http://localhost:3000/api/users/5
+Content-Type: application/json
+
+{
+    "username": "elluu",
+    "password": "********",
+    "email": "eltsu@metropolia.fi",
+    "user_level_id": 1
 }
 
 ### Delete a user
 
-DELETE http://localhost:3000/api/users/305
+DELETE http://localhost:3000/api/users/4
 
-### Update a user
+## Comment resource
 
-PUT http://localhost:3000/api/users/260
+### Get all comments
+
+GET http://localhost:3000/api/comments
+
+
+### Get comment by id
+
+GET http://localhost:3000/api/comments/4
+
+### Get a comment by user id
+
+GET http://localhost:3000/api/comments/users/1
+
+### Create a new comment
+
+POST http://localhost:3000/api/comments
 Content-Type: application/json
 
 {
-    "user_id": 300,
-    "username": "Elli",
-    "password": "********",
-    "email": "elli@metropolia.fi"
+    "comment_id": "",
+    "user_id": 1,
+    "media_id": 1,
+    "comment_text": "Lovely photo!",
+    "created_at": "2021-12-11T06:00:41.000Z"
 }
+
+### Update a comment
+
+PUT http://localhost:3000/api/comments/6
+Content-Type: application/json
+
+{   
+    "comment_id": "",
+    "comment_text": "I like this photo!",
+    "created_at": "2021-12-11T06:00:41.000Z"
+}
+
+### Delete a comment
+
+DELETE http://localhost:3000/api/comments/3 
