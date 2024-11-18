@@ -3,7 +3,7 @@ import {
   fetchMediaItemById,
   addMediaItem,
   updateMediaItem,
-  deleteMediaItem
+  deleteMediaItem,
 } from '../models/media-model.js';
 
 // Get all items
@@ -39,13 +39,13 @@ const postItem = async (req, res) => {
   console.log('post req body', req.body);
   console.log('post req file', req.file);
   const newMediaItem = {
-    // user id is hardcoded for now
-    user_id: 1,
+    // user id read from token added by authentication middleware
+    user_id: req.user.user_id,
     title: req.body.title,
     description: req.body.description,
     filename: req.file.filename,
     filesize: req.file.size,
-    media_type: req.file.mimetype
+    media_type: req.file.mimetype,
   };
   try {
     const id = await addMediaItem(newMediaItem);
@@ -72,9 +72,9 @@ const putItem = async (req, res) => {
   };
 
   try {
-    const result = await updateMediaItem(id, update);
+    const result = await updateMediaItem(id, req.user.user_id, update);
     if (result === 0) {
-      return res.status(404).json({message: 'Item not found'});
+      return res.status(404).json({message: 'Media item not found or no permissions to edit'});
     }
     res.status(200).json({message: 'Item updated', id: id});
   } catch (error) {
@@ -95,7 +95,9 @@ const deleteItem = async (req, res) => {
     res.status(204).end();
   } catch (error) {
     console.error('deleteItem', error.message);
-    res.status(500).json({error: 500, message: 'Database error: unable to delete item'});
+    res
+      .status(500)
+      .json({error: 500, message: 'Database error: unable to delete item'});
   }
 };
 
