@@ -48,7 +48,6 @@ const addUser = async (newUser) => {
   ];
   try {
     const [rows] = await promisePool.query(sql, params);
-    console.log('addUser', rows);
     return rows.insertId;
   } catch (error) {
     console.error('addUser', error.message);
@@ -69,13 +68,11 @@ const updateUser = async (id, update) => {
                         username = ?,
                         password = ?,
                         email = ?,
-                        user_level_id = ?
                         WHERE user_id = ?`;
   const params = [
     update.username,
     update.password,
     update.email,
-    update.user_level_id,
     id,
   ];
   try {

@@ -1,3 +1,4 @@
+import {validationResult} from 'express-validator';
 import {
   fetchMediaItems,
   fetchMediaItemById,
@@ -35,9 +36,13 @@ const getItemById = async (req, res) => {
 
 // Add a new item
 const postItem = async (req, res) => {
-  // input validatation is done later
-  console.log('post req body', req.body);
-  console.log('post req file', req.file);
+  // input validatation
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({errors: errors.array()});
+  } else if (!req.file) {
+    return res.status(400).json({message: 'File is required'});
+  }
   const newMediaItem = {
     // user id read from token added by authentication middleware
     user_id: req.user.user_id,
@@ -49,11 +54,6 @@ const postItem = async (req, res) => {
   };
   try {
     const id = await addMediaItem(newMediaItem);
-    if (!id) {
-      return res
-        .status(400)
-        .json({message: 'Something went wrong. Item not added'});
-    }
     res.status(201).json({message: 'Item added', id: id});
   } catch (error) {
     console.error('postItem', error.message);
@@ -74,7 +74,9 @@ const putItem = async (req, res) => {
   try {
     const result = await updateMediaItem(id, req.user.user_id, update);
     if (result === 0) {
-      return res.status(404).json({message: 'Media item not found or no permissions to edit'});
+      return res
+        .status(404)
+        .json({message: 'Media item not found or no permissions to edit'});
     }
     res.status(200).json({message: 'Item updated', id: id});
   } catch (error) {

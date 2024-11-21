@@ -7,6 +7,7 @@ import {
   putUser,
   removeUser
 } from '../controllers/users-controller.js';
+import { authenticateToken } from '../middlewares/authentication.js';
 
 const upload = multer({dest: 'uploads/'});
 
@@ -26,8 +27,8 @@ usersRouter
 usersRouter
     .route('/:id')
     .get(getUserById)
-    .put(upload.none(), putUser)
-    .delete(removeUser);
+    .put(authenticateToken, upload.none(), putUser)
+    .delete(authenticateToken, removeUser);
 
 export default usersRouter;
 

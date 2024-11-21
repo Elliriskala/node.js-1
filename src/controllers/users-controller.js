@@ -5,6 +5,7 @@ import {
   updateUser,
   deleteUser,
 } from '../models/users-model.js';
+import {validationResult} from 'express-validator';
 
 // Get all users
 const getUsers = async (req, res) => {
@@ -36,21 +37,21 @@ const getUserById = async (req, res) => {
 // Add a new user
 const postUser = async (req, res) => {
   console.log('post req body', req.body);
-  const newUser = {
-    username: req.body.username,
-    password: req.body.password,
-    email: req.body.email,
-    user_level_id: req.body.user_level_id,
-    created_at: new Date(),
-  };
+  // validation errors can be retrieved from the request object (added by express-validator middleware)
+  const errors = validationResult(req);
+  // check if any validation errors
+  if (!errors.isEmpty()) {
+    return res.status(400).json({errors: errors.array()});
+  }
   try {
-    const id = await addUser(newUser);
+    const id = await addUser(req.body);
     if (!id) {
       return res
         .status(400)
         .json({message: 'Something went wrong. User not added'});
     }
     res.status(201).json({message: 'User added', id: id});
+
   } catch (error) {
     console.error('postUser', error.message);
     res.status(503).json({error: 503, message: 'Database error'});
@@ -59,13 +60,18 @@ const postUser = async (req, res) => {
 
 // Update user by id
 const putUser = async (req, res) => {
-  const id = req.params.id;
+  const id = parseInt(req.params.id);
+
+  const loggedInUser = req.user.user_id;
+  
+  if (id !== loggedInUser) {
+    return res.status(403).json({message: 'Forbidden: You can only update your own user details'});
+  }
 
   const user = {
     username: req.body.username,
     password: req.body.password,
     email: req.body.email,
-    user_level_id: req.body.user_level_id,
   };
   try {
     const updateResult = await updateUser(id, user);
@@ -83,7 +89,13 @@ const putUser = async (req, res) => {
 
 // delete user by id
 const removeUser = async (req, res) => {
-  const id = req.params.id;
+  const id = parseInt(req.params.id);
+  const loggedInUser = req.user.user_id;
+
+  if (id !== loggedInUser) {
+    return res.status(403).json({message: 'Forbidden: You can only delete your own user'});
+  }
+  
   try {
     const deleteResult = await deleteUser(id);
     if (!deleteResult) {

@@ -28,6 +28,19 @@ const fetchMediaItemById = async (id) => {
   }
 };
 
+// fetch media owner by user id
+const fetchUserIdByMediaId = async (id) => {
+  try {
+    const sql = 'SELECT user_id FROM mediaItems WHERE media_id = ?';
+    const [rows] = await promisePool.query(sql, [id]);
+    console.log('fetchUserIdByMediaId', rows);
+    return rows[0];
+  } catch (error) {
+    console.error('fetchUserIdByMediaId', error.message);
+    throw new Error('Database error' + error.message);
+  }
+};
+
 /**
  * Add a new media item to the database
  * @param {object} newItem media file details
@@ -106,6 +119,7 @@ const deleteMediaItem = async (id) => {
 export {
   fetchMediaItems,
   fetchMediaItemById,
+  fetchUserIdByMediaId,
   addMediaItem,
   updateMediaItem,
   deleteMediaItem,

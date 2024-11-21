@@ -6,6 +6,7 @@ import {
   updateComment,
   deleteComment,
 } from '../models/comments-model.js';
+import {fetchUserIdByMediaId} from '../models/media-model.js';
 
 // Get all comments
 const getComments = async (req, res) => {
@@ -53,10 +54,11 @@ const getCommentByUserId = async (req, res) => {
 
 // Add a new comment
 const postComment = async (req, res) => {
-  console.log('post req body', req.body);
+  const loggedInUser = req.user.user_id;
+
   const newComment = {
     comment: req.body.comment_id,
-    user_id: req.body.user_id,
+    user_id: loggedInUser,
     media_id: req.body.media_id,
     comment_text: req.body.comment_text,
     created_at: new Date(),
@@ -78,16 +80,26 @@ const postComment = async (req, res) => {
 // Update comment by id
 const putComment = async (req, res) => {
   const id = req.params.id;
+  const loggedInUser = req.user.user_id;
 
   const comment = {
     comment_text: req.body.comment_text,
     created_at: new Date(),
   };
+
   try {
-    const affectedRows = await updateComment(id, comment);
-    if (!affectedRows) {
+    const existingComment = await fetchCommentById(id);
+    if (!existingComment) {
       return res.status(404).json({message: 'Comment not found'});
     }
+
+    if (existingComment.user_id !== loggedInUser) {
+      return res
+        .status(403)
+        .json({message: 'Forbidden: You can only update your own comments'});
+    }
+
+    const affectedRows = await updateComment(id, comment);
     res
       .status(200)
       .json({message: 'Comment updated', affectedRows: affectedRows});
@@ -101,11 +113,23 @@ const putComment = async (req, res) => {
 
 const removeComment = async (req, res) => {
   const id = parseInt(req.params.id);
+  const loggedInUser = req.user.user_id;
+
   try {
-    const affectedRows = await deleteComment(id);
-    if (!affectedRows) {
+    const existingComment = await fetchCommentById(id);
+    if (!existingComment) {
       return res.status(404).json({message: 'Comment not found'});
     }
+    const mediaOwner = await fetchUserIdByMediaId(existingComment.media_id);
+    if (
+      existingComment.user_id !== loggedInUser &&
+      mediaOwner.user_id !== loggedInUser
+    ) {
+      return res
+        .status(403)
+        .json({message: 'Forbidden: You do not have permission to delete this comment'});
+    }
+    const affectedRows = await deleteComment(id);
     res
       .status(200)
       .json({message: `Comment ${id} deleted`, affectedRows: affectedRows});
@@ -115,4 +139,11 @@ const removeComment = async (req, res) => {
   }
 };
 
-export {getComments, getCommentById, getCommentByUserId, postComment, putComment, removeComment};
+export {
+  getComments,
+  getCommentById,
+  getCommentByUserId,
+  postComment,
+  putComment,
+  removeComment,
+};

@@ -21,17 +21,21 @@ GET http://localhost:3000/api/media/4
 ### Create media item
 
 POST http://localhost:3000/api/media
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6IkVsbGkiLCJwYXNzd29yZCI6InNlY3JldDM0NSIsImVtYWlsIjoiZWxsaUBtZXRyb3BvbGlhLmZpIiwidXNlcl9sZXZlbF9pZCI6MSwiY3JlYXRlZF9hdCI6IjIwMjQtMTEtMTRUMTQ6MDQ6MjIuMDAwWiIsImlhdCI6MTczMTkxOTgyNiwiZXhwIjoxNzMyMDA2MjI2fQ.j2RNZa9nAm0ewUltjliFq1e-sVmIrV4xl-frLzZ7ty8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJpYXQiOjE3MzIxMDIzNzksImV4cCI6MTczMjE4ODc3OX0.p9IBYQyCfEHG8y5StJHVhqMhB6dSiqJws5GBSMWpR6M
 Content-Type: multipart/form-data; boundary=----Boundary
 
 ------Boundary
 Content-Disposition: form-data; name="title"
 
-Super cute cat image
+My cute cat Popoliini
+------Boundary
+Content-Disposition: form-data; name="description"
+
+My cat is very cute
 ------Boundary
 Content-Disposition: form-data; name="user_id"
 
-3
+5
 ------Boundary
 Content-Disposition: form-data; name="file"; filename="image.png"
 Content-Type: image/png
@@ -42,7 +46,7 @@ Content-Type: image/png
 ### update a media item
 
 PUT http://localhost:3000/api/media/4
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6IkVsbGkiLCJwYXNzd29yZCI6InNlY3JldDM0NSIsImVtYWlsIjoiZWxsaUBtZXRyb3BvbGlhLmZpIiwidXNlcl9sZXZlbF9pZCI6MSwiY3JlYXRlZF9hdCI6IjIwMjQtMTEtMTRUMTQ6MDQ6MjIuMDAwWiIsImlhdCI6MTczMTkxOTgyNiwiZXhwIjoxNzMyMDA2MjI2fQ.j2RNZa9nAm0ewUltjliFq1e-sVmIrV4xl-frLzZ7ty8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJpYXQiOjE3MzIxODExNDQsImV4cCI6MTczMjI2NzU0NH0.q-J570gBexGuglkr6v0YkcpWneLYijDn95V6STx2vtg
 Content-Type: application/json
 
 {
@@ -54,7 +58,18 @@ Content-Type: application/json
 
 DELETE http://localhost:3000/api/media/1
 
-## User resource
+## User authentication
+
+### Register a new user
+
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+    "username": "popoliini",
+    "password": "Mr.Popo_kissa",
+    "email": "miumiumiu@metropolia.fi"
+}
 
 ### Log in
 
@@ -62,14 +77,16 @@ POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
-    "username": "Elli",
-    "password": "secret345"
+    "username": "elluu",
+    "password": "********"
 }
 
 ### Get my user info
 
 GET http://localhost:3000/api/auth/me
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJ1c2VybmFtZSI6IkVsbGkiLCJwYXNzd29yZCI6InNlY3JldDM0NSIsImVtYWlsIjoiZWxsaUBtZXRyb3BvbGlhLmZpIiwidXNlcl9sZXZlbF9pZCI6MSwiY3JlYXRlZF9hdCI6IjIwMjQtMTEtMTRUMTQ6MDQ6MjIuMDAwWiIsImlhdCI6MTczMTkxOTgyNiwiZXhwIjoxNzMyMDA2MjI2fQ.j2RNZa9nAm0ewUltjliFq1e-sVmIrV4xl-frLzZ7ty8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMiwiaWF0IjoxNzMyMTgwNTg0LCJleHAiOjE3MzIyNjY5ODR9.ik8figS7opE8k7G5cW_uFgeMvgkR6xUZwdYVglp30Ek
+
+## User resource
 
 ### Get all users
 
@@ -86,28 +103,29 @@ Content-Type: application/json
 
 {
     "user_id": "",
-    "username": "Popo",
+    "username": "Popo_kisu",
     "password": "********",
-    "email": "Popo12@example.com",
+    "email": "Popo10@example.com",
     "user_level_id": 2,
     "created_at": "2021-12-11T06:00:41.000Z"
 }
 
 ### Update a user
 
-PUT http://localhost:3000/api/users/5
+PUT http://localhost:3000/api/users/12
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMiwiaWF0IjoxNzMyMTgwNTg0LCJleHAiOjE3MzIyNjY5ODR9.ik8figS7opE8k7G5cW_uFgeMvgkR6xUZwdYVglp30Ek
 Content-Type: application/json
 
 {
-    "username": "elluu",
+    "username": "maumaumaumau",
     "password": "********",
-    "email": "eltsu@metropolia.fi",
-    "user_level_id": 1
+    "email": "miau@metropolia.fi"
 }
 
 ### Delete a user
 
-DELETE http://localhost:3000/api/users/1
+DELETE http://localhost:3000/api/users/12
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMiwiaWF0IjoxNzMyMTgwNTg0LCJleHAiOjE3MzIyNjY5ODR9.ik8figS7opE8k7G5cW_uFgeMvgkR6xUZwdYVglp30Ek
 
 ## Comment resource
 
@@ -127,6 +145,7 @@ GET http://localhost:3000/api/comments/users/1
 ### Create a new comment
 
 POST http://localhost:3000/api/comments
+Authorization: Bearer
 Content-Type: application/json
 
 {

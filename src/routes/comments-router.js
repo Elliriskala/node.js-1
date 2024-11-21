@@ -8,6 +8,7 @@ import {
   putComment,
   removeComment,
 } from '../controllers/comments-controller.js';
+import {authenticateToken} from '../middlewares/authentication.js';
 
 const upload = multer({dest: 'uploads/'});
 
@@ -16,7 +17,7 @@ const commentsRouter = express.Router();
 // /api/comments resource endpoints
 
 // get all comments // add a new comment
-commentsRouter.route('/').get(getComments).post(upload.none(), postComment);
+commentsRouter.route('/').get(getComments).post(authenticateToken, upload.none(), postComment);
 
 // get comment by user id
 commentsRouter.route('/users/:id').get(getCommentByUserId);
@@ -25,7 +26,7 @@ commentsRouter.route('/users/:id').get(getCommentByUserId);
 commentsRouter
   .route('/:id')
   .get(getCommentById)
-  .put(upload.none(), putComment)
-  .delete(removeComment);
+  .put(authenticateToken, upload.none(), putComment)
+  .delete(authenticateToken, removeComment);
 
 export default commentsRouter;
