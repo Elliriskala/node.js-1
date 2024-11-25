@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import {selectUserByUsernameAndPassword, fetchUserById} from '../models/users-model.js';
 import 'dotenv/config';
+import { customError } from '../middlewares/error-handlers.js';
 
-const postLogin = async (req, res) => {
+const postLogin = async (req, res, next) => {
   console.log('postLogin', req.body);
   const {username, password} = req.body;
   const user = await selectUserByUsernameAndPassword(username, password);
@@ -12,17 +13,17 @@ const postLogin = async (req, res) => {
     });
     res.json({...user, token});
   } else {
-    res.sendStatus(401);
+    return next(customError('Invalid username or password', 401));
   }
 };
 
-const getMe = async (req, res) => {
+const getMe = async (req, res, next) => {
   try {
     const user = await fetchUserById(req.user.user_id);
     res.json({user_id: req.user.user_id, ...user});
   } catch (error) {
     console.error('getMe', error.message);
-    res.status(503).json({error: 503, message: error.message});
+    next(customError(error.message, 503));
   }
 };
 

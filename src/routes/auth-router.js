@@ -3,6 +3,7 @@ import {body} from 'express-validator';
 import {postLogin, getMe} from '../controllers/auth-controller.js';
 import {authenticateToken} from '../middlewares/authentication.js';
 import {postUser} from '../controllers/users-controller.js';
+import { validationErrorHandler } from '../middlewares/error-handlers.js';
 
 const authRouter = express.Router();
 
@@ -14,6 +15,7 @@ authRouter
     body('username').trim().isAlphanumeric().isLength({min: 3, max: 20}),
     body('password').isLength({min: 8}),
     body('email').isEmail(),
+    validationErrorHandler,
     postUser,
   );
 

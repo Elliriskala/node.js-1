@@ -77,7 +77,7 @@ POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
-    "username": "elluu",
+    "username": "maumauma",
     "password": "********"
 }
 
@@ -145,20 +145,21 @@ GET http://localhost:3000/api/comments/users/1
 ### Create a new comment
 
 POST http://localhost:3000/api/comments
-Authorization: Bearer
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJpYXQiOjE3MzIxODQyOTgsImV4cCI6MTczMjI3MDY5OH0.sknu1cS_AtZwxfkhqQqFkjhJZk7rVXRCq5LlZhbNxOM
 Content-Type: application/json
 
 {
     "comment_id": "",
-    "user_id": 3,
-    "media_id": 1,
-    "comment_text": "Lovely!",
+    "user_id": 5,
+    "media_id": 4,
+    "comment_text": "Omg love it!",
     "created_at": "2021-12-11T06:00:41.000Z"
 }
 
 ### Update a comment
 
-PUT http://localhost:3000/api/comments/6
+PUT http://localhost:3000/api/comments/11
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJpYXQiOjE3MzIxODQyOTgsImV4cCI6MTczMjI3MDY5OH0.sknu1cS_AtZwxfkhqQqFkjhJZk7rVXRCq5LlZhbNxOM
 Content-Type: application/json
 
 {   
@@ -169,4 +170,5 @@ Content-Type: application/json
 
 ### Delete a comment
 
-DELETE http://localhost:3000/api/comments/3 
+DELETE http://localhost:3000/api/comments/13
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJpYXQiOjE3MzIxODUxNzEsImV4cCI6MTczMjI3MTU3MX0.uaBceOmNB10sqk3U2YOaE5oLtn1Sb2yIl6uFmZSgRHc

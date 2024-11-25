@@ -1,4 +1,3 @@
-import {validationResult} from 'express-validator';
 import {
   fetchMediaItems,
   fetchMediaItemById,
@@ -36,11 +35,7 @@ const getItemById = async (req, res) => {
 
 // Add a new item
 const postItem = async (req, res) => {
-  // input validatation
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({errors: errors.array()});
-  } else if (!req.file) {
+  if (!req.file) {
     return res.status(400).json({message: 'File is required'});
   }
   const newMediaItem = {

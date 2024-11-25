@@ -36,21 +36,9 @@ const getUserById = async (req, res) => {
 
 // Add a new user
 const postUser = async (req, res) => {
-  console.log('post req body', req.body);
-  // validation errors can be retrieved from the request object (added by express-validator middleware)
-  const errors = validationResult(req);
-  // check if any validation errors
-  if (!errors.isEmpty()) {
-    return res.status(400).json({errors: errors.array()});
-  }
   try {
     const id = await addUser(req.body);
-    if (!id) {
-      return res
-        .status(400)
-        .json({message: 'Something went wrong. User not added'});
-    }
-    res.status(201).json({message: 'User added', id: id});
+    res.status(201).json({message: 'New user added', id: id});
 
   } catch (error) {
     console.error('postUser', error.message);
