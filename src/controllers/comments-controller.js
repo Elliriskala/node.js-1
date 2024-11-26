@@ -7,53 +7,54 @@ import {
   deleteComment,
 } from '../models/comments-model.js';
 import {fetchUserIdByMediaId} from '../models/media-model.js';
+import {customError} from '../middlewares/error-handlers.js';
 
 // Get all comments
-const getComments = async (req, res) => {
+const getComments = async (req, res, next) => {
   try {
     res.json(await fetchComments());
   } catch (error) {
     console.error('getComments', error.message);
-    res.status(503).json({error: 503, message: 'Database error'});
+    return next(customError('Database error', 503));
   }
 };
 
 // Get comment by id
-const getCommentById = async (req, res) => {
+const getCommentById = async (req, res, next) => {
   const id = parseInt(req.params.id);
   console.log('getCommentById', id);
   try {
     const comment = await fetchCommentById(id);
     if (!comment) {
-      res.status(404).json({error: 404, message: 'Comment not found'});
+      return next(customError('Comment not found', 404));
     } else {
       return res.json(comment);
     }
   } catch (error) {
     console.error('getCommentById', error.message);
-    res.status(503).json({error: 503, message: 'Database error'});
+    return next(customError('Database error', 503));
   }
 };
 
 // Get comment by user id
-const getCommentByUserId = async (req, res) => {
+const getCommentByUserId = async (req, res, next) => {
   const id = parseInt(req.params.id);
   console.log('getCommentByUserId', id);
   try {
     const comment = await fetchCommentByUserId(id);
     if (!comment) {
-      res.status(404).json({error: 404, message: 'Comment not found'});
+      return next(customError('Comment not found', 404));
     } else {
       return res.json(comment);
     }
   } catch (error) {
     console.error('getCommentByUserId', error.message);
-    res.status(503).json({error: 503, message: 'Database error'});
+    return next(customError(error.message, 503));
   }
 };
 
 // Add a new comment
-const postComment = async (req, res) => {
+const postComment = async (req, res, next) => {
   const loggedInUser = req.user.user_id;
 
   const newComment = {
@@ -66,19 +67,17 @@ const postComment = async (req, res) => {
   try {
     const id = await addComment(newComment);
     if (!id) {
-      return res
-        .status(400)
-        .json({message: 'Something went wrong. Comment not added'});
+      return next(customError('Comment not added', 400));
     }
     res.status(201).json({message: 'Comment added', id: id});
   } catch (error) {
     console.error('postComment', error.message);
-    res.status(503).json({error: 503, message: 'Database error'});
+    return next(customError('Database error', 503));
   }
 };
 
 // Update comment by id
-const putComment = async (req, res) => {
+const putComment = async (req, res, next) => {
   const id = req.params.id;
   const loggedInUser = req.user.user_id;
 
@@ -90,13 +89,16 @@ const putComment = async (req, res) => {
   try {
     const existingComment = await fetchCommentById(id);
     if (!existingComment) {
-      return res.status(404).json({message: 'Comment not found'});
+      return next(customError('Comment not found', 404));
     }
 
     if (existingComment.user_id !== loggedInUser) {
-      return res
-        .status(403)
-        .json({message: 'Forbidden: You can only update your own comments'});
+      return next(
+        customError(
+          'Forbidden: You do not have permission to update this comment',
+          403,
+        ),
+      );
     }
 
     const affectedRows = await updateComment(id, comment);
@@ -105,29 +107,32 @@ const putComment = async (req, res) => {
       .json({message: 'Comment updated', affectedRows: affectedRows});
   } catch (error) {
     console.error('putComment', error.message);
-    res.status(503).json({error: 503, message: 'Database error'});
+    return next(customError('Database error', 503));
   }
 };
 
 // Delete comment by id
 
-const removeComment = async (req, res) => {
+const removeComment = async (req, res, next) => {
   const id = parseInt(req.params.id);
   const loggedInUser = req.user.user_id;
 
   try {
     const existingComment = await fetchCommentById(id);
     if (!existingComment) {
-      return res.status(404).json({message: 'Comment not found'});
+      return next(customError('Comment not found', 404));
     }
     const mediaOwner = await fetchUserIdByMediaId(existingComment.media_id);
     if (
       existingComment.user_id !== loggedInUser &&
       mediaOwner.user_id !== loggedInUser
     ) {
-      return res
-        .status(403)
-        .json({message: 'Forbidden: You do not have permission to delete this comment'});
+      return next(
+        customError(
+          'Forbidden: You do not have permission to delete this comment',
+          403,
+        ),
+      );
     }
     const affectedRows = await deleteComment(id);
     res
@@ -135,7 +140,7 @@ const removeComment = async (req, res) => {
       .json({message: `Comment ${id} deleted`, affectedRows: affectedRows});
   } catch (error) {
     console.error('removeComment', error.message);
-    res.status(503).json({error: 503, message: 'Database error'});
+    return next(customError('Database error', 503));
   }
 };
 

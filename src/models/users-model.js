@@ -1,12 +1,13 @@
 import promisePool from '../utils/database.js';
+import {customError} from '../middlewares/error-handlers.js';
 
-const fetchUsers = async () => {
+const fetchUsers = async (next) => {
   try {
     const [rows] = await promisePool.query('SELECT * FROM users');
     return rows;
   } catch (error) {
     console.error('fetchUsers', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError(error.message, 503));
   }
 };
 
@@ -16,7 +17,7 @@ const fetchUsers = async () => {
  * @returns {Promise<object>} user details
  */
 
-const fetchUserById = async (id) => {
+const fetchUserById = async (id, next) => {
   try {
     // TODO? get only user id
     const sql = 'SELECT username, email, user_level_id FROM users WHERE user_id = ?';
@@ -24,8 +25,8 @@ const fetchUserById = async (id) => {
     console.log('fetchUserById', rows);
     return rows[0];
   } catch (error) {
-    console.error('fetchUserById id error', error.message);
-    throw new Error('Database error' + error.message);
+    console.error('fetchUserById', error.message);
+    return next(customError(error.message, 503));
   }
 };
 
@@ -35,7 +36,7 @@ const fetchUserById = async (id) => {
  * @returns {Promise<number>} id of the new user
  */
 
-const addUser = async (newUser) => {
+const addUser = async (newUser, next) => {
   const sql = `INSERT INTO users 
                     (username, password, email, user_level_id, created_at) 
                     VALUES (?, ?, ?, ?, ?)`;
@@ -51,7 +52,7 @@ const addUser = async (newUser) => {
     return rows.insertId;
   } catch (error) {
     console.error('addUser', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError(error.message, 503));
   }
 };
 
@@ -63,11 +64,11 @@ const addUser = async (newUser) => {
  * @returns {Promise<number>} number of affected rows
  */
 
-const updateUser = async (id, update) => {
+const updateUser = async (id, update, next) => {
   const sql = `UPDATE users SET 
                         username = ?,
                         password = ?,
-                        email = ?,
+                        email = ?
                         WHERE user_id = ?`;
   const params = [
     update.username,
@@ -81,7 +82,7 @@ const updateUser = async (id, update) => {
     return rows.affectedRows;
   } catch (error) {
     console.error('updateUser', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError(error.message, 503));
   }
 };
 
@@ -91,7 +92,7 @@ const updateUser = async (id, update) => {
  * @returns {Promise<number>} number of affected rows
  */
 
-const deleteUser = async (id) => {
+const deleteUser = async (id, next) => {
   // delete comments related to the user
   const deleteCommentSql = `
     DELETE comments 
@@ -137,12 +138,12 @@ const deleteUser = async (id) => {
     }
   } catch (error) {
     console.error('deleteUser', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError(error.message, 503));
   }
 };
 
 // login
-const selectUserByUsernameAndPassword = async (username, password) => {
+const selectUserByUsernameAndPassword = async (username, password, next) => {
   try {
 
     const [rows] = await promisePool.query(
@@ -151,7 +152,7 @@ const selectUserByUsernameAndPassword = async (username, password) => {
     return rows[0];
   } catch (error) {
     console.error('selectUserByUsernameAndPassword', error.message);
-    throw new Error ('Database error ' + error.message);
+    return next(customError(error.message, 503));
   }
 };
 

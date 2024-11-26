@@ -5,55 +5,52 @@ import {
   updateUser,
   deleteUser,
 } from '../models/users-model.js';
-import {validationResult} from 'express-validator';
+import {customError} from '../middlewares/error-handlers.js';
 
 // Get all users
-const getUsers = async (req, res) => {
+const getUsers = async (req, res, next) => {
   try {
     res.json(await fetchUsers());
   } catch (error) {
-    console.error('getUsers', error.message);
-    res.status(503).json({error: 503, message: 'Database error'});
+   return next(customError(error.message, 503));
   }
 };
 
 // Get user by id
-const getUserById = async (req, res) => {
+const getUserById = async (req, res, next) => {
   const id = parseInt(req.params.id);
   console.log('getUserById', id);
   try {
     const user = await fetchUserById(id);
     if (!user) {
-      res.status(404).json({error: 404, message: 'User not found'});
+      return next(customError('User not found', 404));
     } else {
       return res.json(user);
     }
   } catch (error) {
-    console.error('getUserById', error.message);
-    res.status(503).json({error: 503, message: 'Database error'});
+    return next(customError(error.message, 503));
   }
 };
 
 // Add a new user
-const postUser = async (req, res) => {
+const postUser = async (req, res, next) => {
   try {
     const id = await addUser(req.body);
     res.status(201).json({message: 'New user added', id: id});
 
   } catch (error) {
-    console.error('postUser', error.message);
-    res.status(503).json({error: 503, message: 'Database error'});
+    return next(customError(error.message, 503));
   }
 };
 
 // Update user by id
-const putUser = async (req, res) => {
+const putUser = async (req, res, next) => {
   const id = parseInt(req.params.id);
 
   const loggedInUser = req.user.user_id;
   
   if (id !== loggedInUser) {
-    return res.status(403).json({message: 'Forbidden: You can only update your own user details'});
+    return next(customError('Forbidden: You can only update your own user details', 403));
   }
 
   const user = {
@@ -61,40 +58,37 @@ const putUser = async (req, res) => {
     password: req.body.password,
     email: req.body.email,
   };
+
   try {
     const updateResult = await updateUser(id, user);
     if (!updateResult) {
-      return res
-        .status(404)
-        .json({message: 'Something went wrong. User not updated'});
+      return next(customError('User not found', 404));
+    } else {
+      return res.status(200).json({message: 'User updated successfully', id: id});
     }
-    res.status(200).json({message: 'User updated', id: id});
   } catch (error) {
-    console.error('putUser', error.message);
-    res.status(503).json({error: 503, message: 'Database error'});
+    return next(customError(error.message, 503));
   }
 };
 
 // delete user by id
-const removeUser = async (req, res) => {
+const removeUser = async (req, res, next) => {
   const id = parseInt(req.params.id);
   const loggedInUser = req.user.user_id;
 
   if (id !== loggedInUser) {
-    return res.status(403).json({message: 'Forbidden: You can only delete your own user'});
+    return next(customError('Forbidden: You can only delete your own user', 403));
   }
   
   try {
     const deleteResult = await deleteUser(id);
     if (!deleteResult) {
-      return res
-        .status(404)
-        .json({message: 'Something went wrong. User not deleted'});
+      return next(customError('User not found', 404));
     }
     res.status(200).json({message: 'User deleted', id: id});
   } catch (error) {
     console.error('deleteUser', error.message);
-    res.status(503).json({error: 503, message: 'Database error'});
+    return next(customError(error.message, 503));
   }
 }
 

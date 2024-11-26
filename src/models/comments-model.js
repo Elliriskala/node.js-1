@@ -1,15 +1,17 @@
 import promisePool from '../utils/database.js';
+import {customError} from '../middlewares/error-handlers.js';
 
 // Fetch all comments from the database
-const fetchComments = async () => {
+const fetchComments = async (next) => {
   try {
     const [rows] = await promisePool.query('SELECT * FROM comments');
     return rows;
   } catch (error) {
     console.error('fetchComments', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError('Error fetching comments', 503));
   }
 };
+
 
 /**
  * Fetch a single comment from the database by id
@@ -17,7 +19,7 @@ const fetchComments = async () => {
  * @returns {Promise<object>} comment details
  */
 
-const fetchCommentById = async (id) => {
+const fetchCommentById = async (id, next) => {
   try {
     const sql = 'SELECT * FROM comments WHERE comment_id = ?';
     const [rows] = await promisePool.query(sql, [id]);
@@ -25,7 +27,7 @@ const fetchCommentById = async (id) => {
     return rows[0];
   } catch (error) {
     console.error('fetchCommentById', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError('Error fetching comment', 503));
   }
 };
 
@@ -35,7 +37,7 @@ const fetchCommentById = async (id) => {
  * @returns {Promise<object>} comment details
  */
 
-const fetchCommentByUserId = async (id) => {
+const fetchCommentByUserId = async (id, next) => {
   try {
     const sql = 'SELECT * FROM comments WHERE user_id = ?';
     const [rows] = await promisePool.query(sql, [id]);
@@ -43,7 +45,7 @@ const fetchCommentByUserId = async (id) => {
     return rows;
   } catch (error) {
     console.error('fetchCommentByUserId', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError('Error fetching comment', 503));
   }
 };
 
@@ -53,7 +55,7 @@ const fetchCommentByUserId = async (id) => {
  * @returns {Promise<number>} id of the new comment
  */
 
-const addComment = async (newComment) => {
+const addComment = async (newComment, next) => {
   const sql = `INSERT INTO comments 
                     (comment_id, user_id, media_id, comment_text, created_at) 
                     VALUES (?, ?, ?, ?, ?)`;
@@ -70,7 +72,7 @@ const addComment = async (newComment) => {
     return rows.insertId;
   } catch (error) {
     console.error('addComment', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError('Error adding comment', 503));
   }
 };
 
@@ -81,7 +83,7 @@ const addComment = async (newComment) => {
  * @returns {Promise<number>} id of the updated comment
  */
 
-const updateComment = async (id, comment) => {
+const updateComment = async (id, comment, next) => {
   const sql = `UPDATE comments SET comment_text = ?, created_at = ? WHERE comment_id = ?`;
   const params = [
     comment.comment_text,
@@ -94,7 +96,7 @@ const updateComment = async (id, comment) => {
     return rows.affectedRows;
   } catch (error) {
     console.error('updateComment', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError('Error updating comment', 503));
   }
 };
 
@@ -104,7 +106,7 @@ const updateComment = async (id, comment) => {
  * @returns {Promise<number>} number of affected rows
  */
 
-const deleteComment = async (id) => {
+const deleteComment = async (id, next) => {
   const sql = 'DELETE FROM comments WHERE comment_id = ?';
   try {
     const [rows] = await promisePool.query(sql, [id]);
@@ -112,7 +114,7 @@ const deleteComment = async (id) => {
     return rows.affectedRows;
   } catch (error) {
     console.error('deleteComment', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError('Error deleting comment', 503));
   }
 };
 

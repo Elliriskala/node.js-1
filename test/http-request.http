@@ -21,7 +21,7 @@ GET http://localhost:3000/api/media/4
 ### Create media item
 
 POST http://localhost:3000/api/media
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJpYXQiOjE3MzIxMDIzNzksImV4cCI6MTczMjE4ODc3OX0.p9IBYQyCfEHG8y5StJHVhqMhB6dSiqJws5GBSMWpR6M
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJpYXQiOjE3MzI1MjQ5MzQsImV4cCI6MTczMjYxMTMzNH0.Mjfphzf17fNb1FnN8_rUf9I9f8tyTBdLcsZUliMH1Sk
 Content-Type: multipart/form-data; boundary=----Boundary
 
 ------Boundary
@@ -38,7 +38,7 @@ Content-Disposition: form-data; name="user_id"
 5
 ------Boundary
 Content-Disposition: form-data; name="file"; filename="image.png"
-Content-Type: image/png
+Content-Type: pdf
 
 < ./test-cat.png
 ------Boundary--
@@ -66,7 +66,7 @@ POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
 {
-    "username": "popoliini",
+    "username": "po",
     "password": "Mr.Popo_kissa",
     "email": "miumiumiu@metropolia.fi"
 }
@@ -77,7 +77,7 @@ POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
-    "username": "maumauma",
+    "username": "Maumau",
     "password": "********"
 }
 
@@ -94,7 +94,7 @@ GET http://localhost:3000/api/users
 
 ### Get user by id
 
-GET http://localhost:3000/api/users/5
+GET http://localhost:3000/api/users/1
 
 ### Create a new user
 
@@ -103,21 +103,20 @@ Content-Type: application/json
 
 {
     "user_id": "",
-    "username": "Popo_kisu",
+    "username": "Popodii",
     "password": "********",
-    "email": "Popo10@example.com",
-    "user_level_id": 2,
-    "created_at": "2021-12-11T06:00:41.000Z"
+    "email": "Popo1000@example.com",
+    "user_level_id": 2
 }
 
 ### Update a user
 
-PUT http://localhost:3000/api/users/12
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMiwiaWF0IjoxNzMyMTgwNTg0LCJleHAiOjE3MzIyNjY5ODR9.ik8figS7opE8k7G5cW_uFgeMvgkR6xUZwdYVglp30Ek
+PUT http://localhost:3000/api/users/19
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxOSwiaWF0IjoxNzMyNjA5MzY3LCJleHAiOjE3MzI2OTU3Njd9.UnORCAD6MpXsoFx52oA8OQQSHZtR0j4VCL-qYfKpwG4
 Content-Type: application/json
 
 {
-    "username": "maumaumaumau",
+    "username": "Maumau",
     "password": "********",
     "email": "miau@metropolia.fi"
 }
@@ -145,26 +144,26 @@ GET http://localhost:3000/api/comments/users/1
 ### Create a new comment
 
 POST http://localhost:3000/api/comments
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJpYXQiOjE3MzIxODQyOTgsImV4cCI6MTczMjI3MDY5OH0.sknu1cS_AtZwxfkhqQqFkjhJZk7rVXRCq5LlZhbNxOM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxOSwiaWF0IjoxNzMyNjEwMzAxLCJleHAiOjE3MzI2OTY3MDF9.QZ4QVD_2_pkrudbVMnqzJIfDLTXe6rhI8-3oq53sW2E
 Content-Type: application/json
 
 {
     "comment_id": "",
-    "user_id": 5,
-    "media_id": 4,
+    "user_id": "",
+    "media_id": 10,
     "comment_text": "Omg love it!",
     "created_at": "2021-12-11T06:00:41.000Z"
 }
 
 ### Update a comment
 
-PUT http://localhost:3000/api/comments/11
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJpYXQiOjE3MzIxODQyOTgsImV4cCI6MTczMjI3MDY5OH0.sknu1cS_AtZwxfkhqQqFkjhJZk7rVXRCq5LlZhbNxOM
+PUT http://localhost:3000/api/comments/18
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxOSwiaWF0IjoxNzMyNjEwMzAxLCJleHAiOjE3MzI2OTY3MDF9.QZ4QVD_2_pkrudbVMnqzJIfDLTXe6rhI8-3oq53sW2E
 Content-Type: application/json
 
 {   
     "comment_id": "",
-    "comment_text": "I like this photo!",
+    "comment_text": "Wau, amazing!",
     "created_at": "2021-12-11T06:00:41.000Z"
 }
 

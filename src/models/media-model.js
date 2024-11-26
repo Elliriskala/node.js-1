@@ -1,12 +1,13 @@
 import promisePool from '../utils/database.js';
+import { customError } from '../middlewares/error-handlers.js';
 
-const fetchMediaItems = async () => {
+const fetchMediaItems = async (next) => {
   try {
     const [rows] = await promisePool.query('SELECT * FROM mediaItems');
     return rows;
   } catch (error) {
     console.error('fetchMediaItems', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError('Error fetching media items', 503));
   }
 };
 
@@ -16,7 +17,7 @@ const fetchMediaItems = async () => {
  * @returns {Promise<object>} media item details
  */
 
-const fetchMediaItemById = async (id) => {
+const fetchMediaItemById = async (id, next) => {
   try {
     const sql = 'SELECT * FROM mediaItems WHERE media_id = ?';
     const [rows] = await promisePool.query(sql, [id]);
@@ -24,12 +25,12 @@ const fetchMediaItemById = async (id) => {
     return rows[0];
   } catch (error) {
     console.error('fetchMediaItemById', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError('Error fetching media item', 503));
   }
 };
 
 // fetch media owner by user id
-const fetchUserIdByMediaId = async (id) => {
+const fetchUserIdByMediaId = async (id, next) => {
   try {
     const sql = 'SELECT user_id FROM mediaItems WHERE media_id = ?';
     const [rows] = await promisePool.query(sql, [id]);
@@ -37,7 +38,7 @@ const fetchUserIdByMediaId = async (id) => {
     return rows[0];
   } catch (error) {
     console.error('fetchUserIdByMediaId', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError('Error fetching media item', 503));
   }
 };
 
@@ -47,7 +48,7 @@ const fetchUserIdByMediaId = async (id) => {
  * @returns {Promise<number>} id of the new item
  */
 
-const addMediaItem = async (newItem) => {
+const addMediaItem = async (newItem, next) => {
   const sql = `INSERT INTO mediaItems 
                 (user_id, title, description, filename, filesize, media_type, created_at) 
                 VALUES (?, ?, ?, ?, ?, ?, ?)`;
@@ -66,7 +67,7 @@ const addMediaItem = async (newItem) => {
     return rows.insertId;
   } catch (error) {
     console.error('addMediaItem', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError('Error adding media item', 503));
   }
 };
 
@@ -76,7 +77,7 @@ const addMediaItem = async (newItem) => {
  * @returns {Promise<object>} affected rows
  */
 
-const updateMediaItem = async (id, userId, updateItem) => {
+const updateMediaItem = async (id, userId, updateItem, next) => {
   const sql = `UPDATE mediaItems SET title = ?, description = ? WHERE media_id = ? AND user_id = ?`;
   const params = [updateItem.title, updateItem.description, id, userId];
   try {
@@ -85,7 +86,7 @@ const updateMediaItem = async (id, userId, updateItem) => {
     return rows.affectedRows;
   } catch (error) {
     console.error('updateMediaItem', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError('Error updating media item', 503));
   }
 };
 
@@ -95,7 +96,7 @@ const updateMediaItem = async (id, userId, updateItem) => {
  * @returns {Promise<number>} number of affected rows
  */
 
-const deleteMediaItem = async (id) => {
+const deleteMediaItem = async (id, next) => {
   const deleteMediaItemTagsSql = 'DELETE FROM mediaItemTags WHERE media_id = ?';
   const deleteItemSql = 'DELETE FROM mediaItems WHERE media_id = ?';
   try {
@@ -112,7 +113,7 @@ const deleteMediaItem = async (id) => {
     return itemRows.affectedRows;
   } catch (error) {
     console.error('deleteMediaItem', error.message);
-    throw new Error('Database error' + error.message);
+    return next(customError('Error deleting media item', 503));
   }
 };
 

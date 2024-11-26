@@ -5,39 +5,34 @@ import {
   updateMediaItem,
   deleteMediaItem,
 } from '../models/media-model.js';
+import {customError} from '../middlewares/error-handlers.js';
 
 // Get all items
-const getItems = async (req, res) => {
+const getItems = async (req, res, next) => {
   try {
     res.json(await fetchMediaItems());
   } catch (error) {
-    console.error('getItems', error.message);
-    res.status(503).json({error: 503, message: 'Database error'});
+    return next (customError(error.message, 503));
   }
 };
 
 // Get item by id
-const getItemById = async (req, res) => {
+const getItemById = async (req, res, next) => {
   const id = parseInt(req.params.id);
-  console.log('getItemById', id);
   try {
     const item = await fetchMediaItemById(id);
-    if (!item) {
-      res.status(404).json({error: 404, message: 'Item not found'});
-    } else {
+    if (item) {
       return res.json(item);
+    } else {
+      return next(customError('Item not found', 404));
     }
   } catch (error) {
-    console.error('getItemById', error.message);
-    res.status(503).json({error: 503, message: 'Database error'});
+    return next(customError(error.message, 503));
   }
 };
 
 // Add a new item
-const postItem = async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({message: 'File is required'});
-  }
+const postItem = async (req, res, next) => {
   const newMediaItem = {
     // user id read from token added by authentication middleware
     user_id: req.user.user_id,
@@ -52,14 +47,12 @@ const postItem = async (req, res) => {
     res.status(201).json({message: 'Item added', id: id});
   } catch (error) {
     console.error('postItem', error.message);
-    res
-      .status(500)
-      .json({error: 500, message: 'Database error: unable to add item'});
+    return next(customError(error.message, 503));
   }
 };
 
 // update an item by id
-const putItem = async (req, res) => {
+const putItem = async (req, res, next) => {
   const id = parseInt(req.params.id);
   const update = {
     title: req.body.title,
@@ -69,32 +62,28 @@ const putItem = async (req, res) => {
   try {
     const result = await updateMediaItem(id, req.user.user_id, update);
     if (result === 0) {
-      return res
-        .status(404)
-        .json({message: 'Media item not found or no permissions to edit'});
+      return next(customError('Media item not found or no permissions to edit', 404));
+    } else {
+      return res.status(200).json({message: 'Item updated', id: id});
     }
-    res.status(200).json({message: 'Item updated', id: id});
   } catch (error) {
-    console.error('putItem', error.message);
-    res.status(503).json({error: 503, message: 'Database error'});
+    return next(customError(error.message, 503));
   }
 };
 
 // delete an item by id
-const deleteItem = async (req, res) => {
+const deleteItem = async (req, res, next) => {
   const id = parseInt(req.params.id);
 
   try {
     const result = await deleteMediaItem(id);
     if (result === 0) {
-      return res.status(404).json({message: 'Item not found'});
+      return next(customError('Media item not found or no permissions to delete', 404));
+    } else {
+      return res.status(204).end();
     }
-    res.status(204).end();
   } catch (error) {
-    console.error('deleteItem', error.message);
-    res
-      .status(500)
-      .json({error: 500, message: 'Database error: unable to delete item'});
+    return next(customError(error.message, 500));
   }
 };
 

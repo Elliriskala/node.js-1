@@ -1,13 +1,15 @@
 import express from 'express';
+import {body} from 'express-validator';
 import multer from 'multer';
 import {
   getUsers,
   getUserById,
   postUser,
   putUser,
-  removeUser
+  removeUser,
 } from '../controllers/users-controller.js';
-import { authenticateToken } from '../middlewares/authentication.js';
+import {authenticateToken} from '../middlewares/authentication.js';
+import { validationErrorHandler } from '../middlewares/error-handlers.js';
 
 const upload = multer({dest: 'uploads/'});
 
@@ -17,18 +19,23 @@ const usersRouter = express.Router();
 
 // get all users // add a new user
 
-usersRouter
-    .route('/')
-    .get(getUsers)
-    .post(upload.none(), postUser);
+usersRouter.route('/').get(getUsers).post(upload.none(), postUser);
 
 // get user by id // update user by id
 
 usersRouter
-    .route('/:id')
-    .get(getUserById)
-    .put(authenticateToken, upload.none(), putUser)
-    .delete(authenticateToken, removeUser);
+  .route('/:id')
+  .get(getUserById)
+  .put(
+    authenticateToken,
+    body('username').trim().isAlphanumeric().isLength({min: 3, max: 20}),
+    body('password').isString().isLength({min: 8}),
+    body('email').isEmail(),
+    upload.none(),
+    validationErrorHandler,
+    putUser,
+  )
+  .delete(authenticateToken, removeUser);
 
 export default usersRouter;
 
