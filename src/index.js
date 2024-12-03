@@ -1,4 +1,5 @@
 import express from 'express';
+import helmet from 'helmet';
 import mediaRouter from '../src/routes/media-router.js';
 import usersRouter from '../src/routes/users-router.js';
 import commentsRouter from '../src/routes/comments-router.js';
@@ -11,6 +12,10 @@ const app = express();
 app.set('view engine', 'pug');
 app.set('views', 'src/views');
 
+app.use(helmet());
+
+app.disable('x-powered-by');
+
 app.use(express.json());
 
 // Home page (client) as static HTML, CSS, js
@@ -19,6 +24,11 @@ app.use(express.static('public'));
 // Uploaded media files
 app.use('/uploads', express.static('uploads'));
 
+// Documendation website by Apidoc
+app.use('/api', express.static('doc'));
+
+
+// not used anymore beacause of the new routes
 // Api documentation with pug
 app.get('/api', (req, res) => {
   res.render('index', {

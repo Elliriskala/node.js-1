@@ -6,3 +6,4 @@ uploads/*
 # But don't ignore uploads/.gitkeep
 !uploads/.gitkeep
 .env
+doc/

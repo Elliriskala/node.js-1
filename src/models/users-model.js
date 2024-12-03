@@ -143,17 +143,17 @@ const deleteUser = async (id, next) => {
 };
 
 // login
-const selectUserByUsernameAndPassword = async (username, password, next) => {
+const selectUserByUsername = async (username, next) => {
   try {
 
     const [rows] = await promisePool.query(
-      'SELECT user_id, username, email, user_level_id, created_at FROM Users WHERE username = ? AND password = ?', [username, password],
+      'SELECT user_id, username, password, email, user_level_id, created_at FROM users WHERE username = ?', [username],
     );
     return rows[0];
   } catch (error) {
-    console.error('selectUserByUsernameAndPassword', error.message);
+    console.error('selectUserByUsername', error.message);
     return next(customError(error.message, 503));
   }
 };
 
-export {fetchUsers, fetchUserById, addUser, updateUser, deleteUser, selectUserByUsernameAndPassword};
+export {fetchUsers, fetchUserById, addUser, updateUser, deleteUser, selectUserByUsername};

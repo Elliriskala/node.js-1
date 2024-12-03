@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import {
   fetchUsers,
   fetchUserById,
@@ -34,6 +35,11 @@ const getUserById = async (req, res, next) => {
 
 // Add a new user
 const postUser = async (req, res, next) => {
+  const user = req.body;
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(user.password, salt);
+  console.log('hash', hashedPassword);
+  user.password = hashedPassword;
   try {
     const id = await addUser(req.body);
     res.status(201).json({message: 'New user added', id: id});

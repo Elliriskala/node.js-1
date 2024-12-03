@@ -66,9 +66,9 @@ POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
 {
-    "username": "po",
+    "username": "popopopo",
     "password": "Mr.Popo_kissa",
-    "email": "miumiumiu@metropolia.fi"
+    "email": "kissa@metropolia.fi"
 }
 
 ### Log in
@@ -77,8 +77,8 @@ POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
-    "username": "Maumau",
-    "password": "********"
+    "username": "popoliinikissa",
+    "password": "Mr.Popo_kissa"
 }
 
 ### Get my user info
